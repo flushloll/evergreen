@@ -1,0 +1,4 @@
+resume: resume.yaml
+render:
+  out: dist
+  formats: [md, html, pdf]

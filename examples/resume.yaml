@@ -1,0 +1,47 @@
+# A fictional résumé showing what Evergreen keeps in sync. Render it with:
+#   evergreen render -c examples/evergreen.yml
+basics:
+  name: Jordan Rivera
+  label: Software Engineer
+  email: jordan@example.com
+  url: https://example.com
+  location:
+    city: Boston, MA
+  summary: Engineer who likes small tools, fast feedback loops and well-tested code.
+  profiles:
+  - network: GitHub
+    username: jordan-example
+    url: https://github.com/jordan-example
+work:
+- name: Northwind Robotics
+  position: Software Engineering Intern
+  location: Cambridge, MA
+  startDate: 2026-06
+  endDate: 2026-08
+  highlights:
+  - Built a telemetry dashboard in TypeScript used by the field-test team
+  - Cut simulator start-up time from 40s to 9s by caching scene assets
+education:
+- institution: Example University
+  studyType: B.S.
+  area: Computer Science
+  startDate: 2025-09
+projects:
+- name: rocket-sim
+  description: Browser-based rocket flight simulator.
+  url: https://github.com/jordan-example/rocket-sim
+  keywords: [Rust, WebAssembly, physics]
+  startDate: 2026-02
+  highlights:
+  - Wrote a 6-DOF physics core in Rust compiled to WebAssembly
+  - Added a plotting view for altitude, velocity and thrust curves
+- name: Open-source contributions
+  type: open-source
+  highlights:
+  - Merged 3 pull requests into example-org/plotkit
+  - Merged 1 pull request into example-org/tinyhttp
+skills:
+- name: Languages
+  keywords: [TypeScript, Rust, Python, Go]
+- name: Skills
+  keywords: [Robotics, CAD, Technical writing]
