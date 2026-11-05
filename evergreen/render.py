@@ -66,7 +66,7 @@ def to_markdown(r: dict[str, Any]) -> str:
         lines += ["", f"## {title}"]
         for name, sub, dates, url, summary, bullets in items:
             head = f"[{name}]({url})" if url else name
-            lines += ["", f"### {head}" + (f" — {sub}" if sub else "") + (f"  \n*{dates}*" if dates else "")]
+            lines += ["", f"### {head}" + (f" — {sub}" if sub else "") + (f"  \n{dates}" if dates else "")]
             if summary:
                 lines.append(summary)
             lines += [f"- {x}" for x in bullets]

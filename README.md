@@ -4,92 +4,74 @@
 
 ### Your résumé, always in season.
 
-**Ship code, update LinkedIn, and get a pull request with your refreshed résumé every Monday.**
+Push code, change jobs, learn things, and stop rewriting your CV by hand.
 
 [![tests](https://img.shields.io/github/actions/workflow/status/flushloll/evergreen/test.yml?branch=main&style=flat-square&label=tests)](https://github.com/flushloll/evergreen/actions/workflows/test.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white)](pyproject.toml)
 [![JSON Resume](https://img.shields.io/badge/format-JSON_Resume-1f7a4d?style=flat-square)](https://jsonresume.org/schema)
-[![GitHub Action](https://img.shields.io/badge/GitHub-Action-2088ff?style=flat-square&logo=githubactions&logoColor=white)](action.yml)
 [![MIT license](https://img.shields.io/badge/license-MIT-f4c430?style=flat-square)](LICENSE)
 
-[Quick start](#quick-start) · [How it works](#how-it-works) · [What gets synced](#what-gets-synced) · [AI bullets](#ai-bullets-optional) · [FAQ](#faq)
+[Quick start](#quick-start) · [How it works](#how-it-works) · [What it grabs](#what-it-grabs) · [AI bullets](#ai-bullets-optional) · [FAQ](#faq)
 
 <code>pip install git+https://github.com/flushloll/evergreen</code>
 
 <br /><br />
 
-<img src="docs/example.png" alt="A résumé rendered by Evergreen: experience, education, projects pulled from GitHub, open-source contributions, and skills" width="720" />
+<img src="docs/example.png" alt="A résumé rendered by Evergreen" width="720" />
 
 </div>
 
 ---
 
-Your résumé goes stale the moment you push a new project. Evergreen keeps one `resume.yaml` ([JSON Resume](https://jsonresume.org) format) as the source of truth. On a schedule, it pulls your newest GitHub work and your LinkedIn history into that file, renders it to **Markdown, HTML and PDF**, and opens a **pull request** for you to review. It never silently rewrites what you wrote.
+I kept forgetting to add new projects to my résumé, so I made this. Evergreen keeps your résumé in one `resume.yaml` file. Every week it checks GitHub (and LinkedIn, if you want) for new stuff, adds it, and sends you a pull request. You look it over, fix the wording if you feel like it, and merge. You also get a PDF out of it.
 
 ## Quick start
-
-**1. Scaffold a résumé repo** (a new, ideally private repo works best):
 
 ```bash
 pip install git+https://github.com/flushloll/evergreen
 evergreen init --github <your-username>
+evergreen sync      # pulls your GitHub stuff into resume.yaml
+evergreen render    # makes dist/resume.pdf (+ .html and .md)
 ```
 
-This creates `evergreen.yml` (settings), `resume.yaml` (your résumé) and `.github/workflows/evergreen.yml` (a weekly job).
-
-**2. Sync and render locally:**
-
-```bash
-evergreen sync      # pull GitHub (+ LinkedIn) into resume.yaml
-evergreen render    # → dist/resume.md, resume.html, resume.pdf
-```
-
-Edit `resume.yaml` however you like. Your words always win.
-
-**3. Push it to GitHub.** Turn on **Settings → Actions → General → Allow GitHub Actions to create pull requests**. You'll get a `🌲 Résumé refresh` PR whenever something new shows up. Run it on demand from the **Actions** tab.
+Then push the folder to a GitHub repo and turn on **Settings → Actions → General → Allow GitHub Actions to create pull requests**. That's it. A PR shows up on Mondays when there's something new, or you can kick one off from the Actions tab.
 
 > [!TIP]
-> **Adding LinkedIn.** LinkedIn has no public profile API, so Evergreen reads the export LinkedIn gives you instead of scraping.
-> Request it under **Settings → Data privacy → Get a copy of your data**, then:
+> **Want LinkedIn too?** LinkedIn doesn't have a public API, so instead of scraping, Evergreen reads the export LinkedIn will email you (**Settings → Data privacy → Get a copy of your data**):
 > ```bash
 > evergreen import-linkedin ~/Downloads/Basic_LinkedInDataExport.zip
 > ```
-> Only the five résumé CSVs are copied. Messages and connections never touch your repo. Re-import when you update LinkedIn.
+> It only keeps the 5 files it needs. Your messages and connections stay out of the repo.
 
 ## How it works
 
 ```text
-GitHub API ──┐
-             ├──> evergreen sync ──> resume.yaml ──> evergreen render ──> md · html · pdf
-LinkedIn  ───┘    (fill, never        (yours)
-export             overwrite)
-
-Every Monday the GitHub Action runs both steps and opens a PR you review and merge.
+GitHub ─────┐
+            ├──> evergreen sync ──> resume.yaml ──> evergreen render ──> pdf · html · md
+LinkedIn ───┘                       (you edit this)
 ```
 
-The merge follows three rules:
+It plays nice with your edits:
 
-- **Fill, don't overwrite.** A field is only set if it's empty. Keyword lists are unioned.
-- **Deletes stick.** Remove a project you don't want and it won't come back.
-- **Everything is a diff.** Locally, run `evergreen sync --dry-run` to preview. In CI, it's a PR.
+- It only fills in blanks. Anything you wrote stays exactly as is.
+- If you delete something it added, it won't come back.
+- Want to see what it would change first? Run `evergreen sync --dry-run`.
 
-## What gets synced
+## What it grabs
 
-| Source | Résumé section | Details |
-| --- | --- | --- |
-| GitHub profile | `basics` | Name, website, location, bio, GitHub link |
-| Your repos | `projects` | Top `max_projects` non-fork repos with a description, ranked by `recent` or `stars`. Languages and topics become keywords. Inactive repos get an end date |
-| Merged PRs to others' repos | `projects` → *Open-source contributions* | "Merged 3 pull requests into org/repo" |
-| Repo languages | `skills` → *Languages* | Ordered by bytes of code |
-| LinkedIn `Positions.csv` | `work` | Company, title, dates, description |
-| LinkedIn `Education.csv` | `education` | School, degree, dates |
-| LinkedIn `Skills.csv`, `Certifications.csv` | `skills`, `certificates` | |
+| From | Goes into |
+| --- | --- |
+| Your GitHub profile | Name, website, location, bio |
+| Your repos | Projects: your most recent (or most starred) ones that have a description, tagged with languages and topics |
+| PRs merged into other people's repos | An "Open-source contributions" project |
+| Languages you code in | A "Languages" skills list |
+| LinkedIn export | Jobs, education, skills, certifications |
 
-All knobs live in `evergreen.yml`: `exclude`, `min_stars`, `rank`, `max_projects`, render `formats` and more.
+You can tweak all of it in `evergreen.yml`, e.g. how many projects to show or which repos to skip.
 
 ## AI bullets (optional)
 
-New projects arrive with a description but no bullet points. Set `ai.enabled: true` and add an `ANTHROPIC_API_KEY` repo secret, and Claude drafts up to 3 highlights per *new* project from its README. The prompt forbids invented metrics, and existing bullets are never touched. Drafts show up in the PR, marked for review.
+New projects come in with just a one-line description. If you set `ai.enabled: true` and add an `ANTHROPIC_API_KEY` secret, Claude reads each new repo's README and writes a few bullet points for it. It's told not to make anything up, and it never touches bullets you already have.
 
 ```bash
 pip install "evergreen-cv[ai] @ git+https://github.com/flushloll/evergreen"
@@ -98,14 +80,14 @@ ANTHROPIC_API_KEY=sk-... evergreen sync --ai
 
 ## FAQ
 
-**Will it overwrite my edits?** No. It only fills empty fields, adds keywords, and adds entries it hasn't added before. The one exception is the *Open-source contributions* entry, which it fully manages.
+**Will it mess up what I wrote?** No. It only adds. The one exception is the "Open-source contributions" entry, which it rewrites every time.
 
-**Can I use my own theme?** Yes. `resume.yaml` is standard JSON Resume, so any [JSON Resume theme](https://jsonresume.org/themes) works. The built-in HTML/PDF is a clean one-page-friendly default.
+**Can I use a different look?** Yes. `resume.yaml` is standard [JSON Resume](https://jsonresume.org/themes), so any theme works.
 
-**Where does the PDF come from?** Headless Chrome/Chromium prints the HTML. It's preinstalled on GitHub's runners. Locally, Evergreen uses Chrome if it finds it and skips the PDF otherwise.
+**How does the PDF get made?** It prints the HTML with Chrome. GitHub's runners already have Chrome. On your laptop it uses Chrome if you have it and skips the PDF if you don't.
 
-**Does it need a token?** No for public data. In Actions, the built-in `GITHUB_TOKEN` is used automatically.
+**Do I need a token?** Not for public repos.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Do whatever you want with it.
