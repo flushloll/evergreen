@@ -1,0 +1,59 @@
+name: Evergreen résumé
+description: Refresh resume.yaml from GitHub and LinkedIn, render it, and open a pull request with the changes.
+branding:
+  icon: refresh-cw
+  color: green
+
+inputs:
+  config:
+    description: Path to evergreen.yml
+    default: evergreen.yml
+  anthropic-api-key:
+    description: Optional. Enables AI-drafted bullets for new projects when ai.enabled is true.
+    default: ""
+  github-token:
+    description: Token for GitHub API reads and for opening the PR
+    default: ${{ github.token }}
+  open-pr:
+    description: Open a pull request with the changes (false = commit nothing, just build)
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install evergreen
+      shell: bash
+      run: pip install --quiet "${{ github.action_path }}[ai]"
+
+    - name: Sync and render
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+      run: |
+        evergreen sync --config "${{ inputs.config }}" --changes-file "$RUNNER_TEMP/evergreen-changes.md"
+        evergreen render --config "${{ inputs.config }}"
+        cat "$RUNNER_TEMP/evergreen-changes.md" >> "$GITHUB_STEP_SUMMARY"
+        {
+          echo 'body<<EVERGREEN_EOF'
+          echo 'Evergreen found new activity. Review, tweak the wording, and merge.'
+          echo
+          cat "$RUNNER_TEMP/evergreen-changes.md"
+          echo 'EVERGREEN_EOF'
+        } >> "$GITHUB_OUTPUT"
+      id: sync
+
+    - name: Open pull request
+      if: inputs.open-pr == 'true'
+      uses: peter-evans/create-pull-request@v7
+      with:
+        token: ${{ inputs.github-token }}
+        branch: evergreen/refresh
+        delete-branch: true
+        commit-message: "evergreen: refresh résumé"
+        title: "🌲 Résumé refresh"
+        body: ${{ steps.sync.outputs.body }}
