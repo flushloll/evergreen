@@ -57,7 +57,7 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: flushloll/evergreen@main
         with:
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}   # optional
