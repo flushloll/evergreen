@@ -2,7 +2,7 @@
 
 # Evergreen
 
-**Ship code, update LinkedIn, and get a pull request with your refreshed résumé every Monday.**
+**Ship code, update LinkedIn, and get a pull request with your refreshed resume every Monday.**
 
 [![tests](https://img.shields.io/github/actions/workflow/status/flushloll/evergreen/test.yml?branch=main&style=flat-square&label=tests)](https://github.com/flushloll/evergreen/actions/workflows/test.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white)](pyproject.toml)
@@ -16,24 +16,24 @@
 
 <br /><br />
 
-<img src="docs/example.png" alt="A résumé rendered by Evergreen: experience, education, projects pulled from GitHub, open-source contributions, and skills" width="720" />
+<img src="docs/example.png" alt="A resume rendered by Evergreen: experience, education, projects pulled from GitHub, open-source contributions, and skills" width="720" />
 
 </div>
 
 ---
 
-Your résumé goes stale the moment you push a new project. Evergreen keeps one `resume.yaml` ([JSON Resume](https://jsonresume.org) format) as the source of truth. On a schedule, it pulls your newest GitHub work and your LinkedIn history into that file, renders it to **Markdown, HTML and PDF**, and opens a **pull request** for you to review. It never silently rewrites what you wrote.
+Your resume goes stale the moment you push a new project. Evergreen keeps one `resume.yaml` ([JSON Resume](https://jsonresume.org) format) as the source of truth. On a schedule, it pulls your newest GitHub work and your LinkedIn history into that file, renders it to **Markdown, HTML and PDF**, and opens a **pull request** for you to review. It never silently rewrites what you wrote.
 
 ## Quick start
 
-**1. Scaffold a résumé repo** (a new, ideally private repo works best):
+**1. Scaffold a resume repo** (a new, ideally private repo works best):
 
 ```bash
 pip install git+https://github.com/flushloll/evergreen
 evergreen init --github <your-username>
 ```
 
-This creates `evergreen.yml` (settings), `resume.yaml` (your résumé) and `.github/workflows/evergreen.yml` (a weekly job).
+This creates `evergreen.yml` (settings), `resume.yaml` (your resume) and `.github/workflows/evergreen.yml` (a weekly job).
 
 **2. Sync and render locally:**
 
@@ -44,7 +44,7 @@ evergreen render    # → dist/resume.md, resume.html, resume.pdf
 
 Edit `resume.yaml` however you like. Your words always win.
 
-**3. Push it to GitHub.** Turn on **Settings → Actions → General → Allow GitHub Actions to create pull requests**. You'll get a `🌲 Résumé refresh` PR whenever something new shows up. Run it on demand from the **Actions** tab.
+**3. Push it to GitHub.** Turn on **Settings → Actions → General → Allow GitHub Actions to create pull requests**. You'll get a `🌲 Resume refresh` PR whenever something new shows up. Run it on demand from the **Actions** tab.
 
 > [!TIP]
 > **Adding LinkedIn.** LinkedIn has no public profile API, so Evergreen reads the export LinkedIn gives you instead of scraping.
@@ -52,7 +52,7 @@ Edit `resume.yaml` however you like. Your words always win.
 > ```bash
 > evergreen import-linkedin ~/Downloads/Basic_LinkedInDataExport.zip
 > ```
-> Only the five résumé CSVs are copied. Messages and connections never touch your repo. Re-import when you update LinkedIn.
+> Only the five resume CSVs are copied. Messages and connections never touch your repo. Re-import when you update LinkedIn.
 
 ## How it works
 
@@ -73,7 +73,7 @@ The merge follows three rules:
 
 ## What gets synced
 
-| Source | Résumé section | Details |
+| Source | Resume section | Details |
 | --- | --- | --- |
 | GitHub profile | `basics` | Name, website, location, bio, GitHub link |
 | Your repos | `projects` | Top `max_projects` non-fork repos with a description, ranked by `recent` or `stars`. Languages and topics become keywords. Inactive repos get an end date |
