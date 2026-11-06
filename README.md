@@ -1,8 +1,6 @@
 <div align="center">
 
-# 🌲 Evergreen
-
-### Your résumé, always in season.
+# Evergreen
 
 **Ship code, update LinkedIn, and get a pull request with your refreshed résumé every Monday.**
 
